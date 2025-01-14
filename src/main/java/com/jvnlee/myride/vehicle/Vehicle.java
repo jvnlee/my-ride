@@ -7,9 +7,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,8 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "vehicle", fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "driver_id")
     private Driver driver;
 
     @Column(name = "model_name")
@@ -41,6 +42,10 @@ public class Vehicle {
     private Vehicle(ModelName modelName, String licensePlateNumber) {
         this.modelName = modelName;
         this.licensePlateNumber = licensePlateNumber;
+    }
+
+    public void assignDriver(Driver driver) {
+        this.driver = driver;
     }
 
 }
