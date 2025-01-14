@@ -49,6 +49,7 @@ public class Driver {
     private DriverStatus status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "driver")
+    @Builder.Default
     private List<Trip> trips = new ArrayList<>();
 
     public enum DriverStatus {

@@ -42,6 +42,7 @@ public class Rider {
     private RiderStatus status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "rider")
+    @Builder.Default
     private List<Trip> trips = new ArrayList<>();
 
     public enum RiderStatus {
