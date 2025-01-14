@@ -1,13 +1,9 @@
 package com.jvnlee.myride.trip;
 
-import com.jvnlee.myride.payment.Payment;
-import com.jvnlee.myride.common.GeoLocation;
 import com.jvnlee.myride.driver.Driver;
 import com.jvnlee.myride.rider.Rider;
-import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.AttributeOverrides;
+import com.jvnlee.myride.vehicle.Vehicle;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,32 +34,24 @@ public class Trip {
     private Driver driver;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rider_id")
+    @JoinColumn(name = "rider_id", nullable = false)
     private Rider rider;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "latitude", column = @Column(name = "pickup_latitude")),
-            @AttributeOverride(name = "longitude", column = @Column(name = "pickup_longitude"))
-    })
-    private GeoLocation pickupLocation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vehicle_id")
+    private Vehicle vehicle;
 
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "latitude", column = @Column(name = "dropoff_latitude")),
-            @AttributeOverride(name = "longitude", column = @Column(name = "dropoff_longitude"))
-    })
-    private GeoLocation dropoffLocation;
+    @Column(name = "pickup_location", nullable = false)
+    private String pickupLocation;
+
+    @Column(name = "dropoff_location", nullable = false)
+    private String dropoffLocation;
 
     @Column(name = "pickup_time")
     private LocalDateTime pickupTime;
 
     @Column(name = "dropoff_time")
     private LocalDateTime dropoffTime;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -79,12 +66,23 @@ public class Trip {
     }
 
     @Builder
-    private Trip(Rider rider, GeoLocation pickupLocation, GeoLocation dropoffLocation, Payment payment) {
+    private Trip(Driver driver, Rider rider, Vehicle vehicle, String pickupLocation, String dropoffLocation) {
+        this.driver = driver;
         this.rider = rider;
+        this.vehicle = vehicle;
         this.pickupLocation = pickupLocation;
         this.dropoffLocation = dropoffLocation;
-        this.payment = payment;
         this.status = TripStatus.REQUESTED;
+    }
+
+    public void startTrip() {
+        this.pickupTime = LocalDateTime.now();
+        this.status = TripStatus.IN_PROGRESS;
+    }
+
+    public void completeTrip() {
+        this.dropoffTime = LocalDateTime.now();
+        this.status = TripStatus.COMPLETED;
     }
 
 }
