@@ -23,8 +23,6 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Getter
 public class Rider {
 
@@ -42,12 +40,17 @@ public class Rider {
     private RiderStatus status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "rider")
-    @Builder.Default
     private List<Trip> trips = new ArrayList<>();
 
     public enum RiderStatus {
         ON_TRIP,
         NOT_ON_TRIP
+    }
+
+    @Builder
+    private Rider(String name) {
+        this.name = name;
+        this.status = RiderStatus.NOT_ON_TRIP;
     }
 
 }

@@ -6,7 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +14,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Getter
 public class Payment {
 
@@ -45,6 +42,12 @@ public class Payment {
     public enum PaymentStatus {
         COMPLETED,
         FAILED
+    }
+
+    @Builder
+    private Payment(PaymentMethod method) {
+        this.method = method;
+        this.status = PaymentStatus.PENDING;
     }
 
 }

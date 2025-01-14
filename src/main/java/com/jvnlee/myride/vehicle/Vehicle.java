@@ -16,8 +16,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Getter
 public class Vehicle {
 
@@ -37,6 +35,12 @@ public class Vehicle {
     public enum ModelName {
         K5,
         IONIQ5
+    }
+
+    @Builder
+    private Vehicle(ModelName modelName, String licensePlateNumber) {
+        this.modelName = modelName;
+        this.licensePlateNumber = licensePlateNumber;
     }
 
 }

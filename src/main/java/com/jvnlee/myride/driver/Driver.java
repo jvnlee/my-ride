@@ -26,8 +26,6 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Getter
 public class Driver {
 
@@ -49,13 +47,19 @@ public class Driver {
     private DriverStatus status;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "driver")
-    @Builder.Default
     private List<Trip> trips = new ArrayList<>();
 
     public enum DriverStatus {
         AVAILABLE,
         ASSIGNED,
         UNAVAILABLE
+    }
+
+    @Builder
+    private Driver(String name, Vehicle vehicle) {
+        this.name = name;
+        this.vehicle = vehicle;
+        this.status = DriverStatus.AVAILABLE;
     }
 
 }

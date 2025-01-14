@@ -19,7 +19,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,8 +27,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder
 @Getter
 public class Trip {
 
@@ -79,6 +76,15 @@ public class Trip {
         IN_PROGRESS,
         COMPLETED,
         CANCELED
+    }
+
+    @Builder
+    private Trip(Rider rider, GeoLocation pickupLocation, GeoLocation dropoffLocation, Payment payment) {
+        this.rider = rider;
+        this.pickupLocation = pickupLocation;
+        this.dropoffLocation = dropoffLocation;
+        this.payment = payment;
+        this.status = TripStatus.REQUESTED;
     }
 
 }
