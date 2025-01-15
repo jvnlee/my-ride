@@ -1,4 +1,4 @@
-package com.jvnlee.myride.common.service;
+package com.jvnlee.myride.driver.service;
 
 import com.jvnlee.myride.driver.dto.DriverLocationDto;
 import jakarta.annotation.PostConstruct;
@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class LocationService {
+public class DriverLocationService {
 
     private final BlockingQueue<DriverLocationDto> driverLocationQueue = new LinkedBlockingQueue<>();
 

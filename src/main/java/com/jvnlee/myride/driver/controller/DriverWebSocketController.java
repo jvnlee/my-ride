@@ -1,6 +1,6 @@
 package com.jvnlee.myride.driver.controller;
 
-import com.jvnlee.myride.common.service.LocationService;
+import com.jvnlee.myride.driver.service.DriverLocationService;
 import com.jvnlee.myride.driver.dto.DriverLocationDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 public class DriverWebSocketController {
 
-    private final LocationService locationService;
+    private final DriverLocationService driverLocationService;
 
     @MessageMapping("/location/driver/update")
     public void processLocationUpdate(@Payload DriverLocationDto driverLocationDto) {
@@ -24,7 +24,7 @@ public class DriverWebSocketController {
                 driverLocationDto.getLongitude()
         );
 
-        locationService.putDriverLocation(driverLocationDto);
+        driverLocationService.putDriverLocation(driverLocationDto);
     }
 
 }
