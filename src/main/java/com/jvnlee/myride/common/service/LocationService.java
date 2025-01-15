@@ -2,6 +2,7 @@ package com.jvnlee.myride.common.service;
 
 import com.jvnlee.myride.driver.dto.DriverLocationDto;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.geo.Point;
@@ -72,6 +73,12 @@ public class LocationService {
     @PostConstruct
     public void initDriverLocationUpdateThread() {
         executorService.submit(this::updateDriverLocation);
+    }
+
+    @PreDestroy
+    public void shutdownExecutorService() {
+        log.info("Shutting down executor service...");
+        executorService.shutdown();
     }
 
 }
