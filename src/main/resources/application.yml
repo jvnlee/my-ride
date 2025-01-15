@@ -7,5 +7,5 @@ spring:
     hibernate:
       ddl-auto: update
   redis:
-    host: root
+    host: redis
     port: 6379
