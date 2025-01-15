@@ -24,7 +24,7 @@ public class DriverWebSocketController {
                 driverLocationDto.getLongitude()
         );
 
-        locationService.offerDriverLocation(driverLocationDto);
+        locationService.putDriverLocation(driverLocationDto);
     }
 
 }
