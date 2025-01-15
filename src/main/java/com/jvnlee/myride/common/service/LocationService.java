@@ -9,6 +9,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Slf4j
@@ -19,6 +21,8 @@ public class LocationService {
     private final BlockingQueue<DriverLocationDto> driverLocationQueue = new LinkedBlockingQueue<>();
 
     private final RedisTemplate<String, String> redisTemplate;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public void putDriverLocation(DriverLocationDto driverLocationDto) {
         try {
@@ -39,7 +43,7 @@ public class LocationService {
     }
 
     public void updateDriverLocation() {
-        while (true) {
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 DriverLocationDto driverLocationDto = takeDriverLocation();
 
@@ -55,20 +59,19 @@ public class LocationService {
                 if (result != null && result > 0) {
                     log.info("Driver location GeoHash updated to Redis: Driver ID = {}", driverId);
                 }
-
-                Thread.sleep(1000);
             } catch (InterruptedException e) {
-                log.error("UpdateLocationThread interrupted", e);
+                log.warn("UpdateDriverLocationThread interrupted, shutting down gracefully...");
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+                log.error("Error updating driver location: {}", e.getMessage(), e);
             }
         }
     }
 
     @PostConstruct
-    public void initLocationUpdateThread() {
-        Thread locationUpdateThread = new Thread(this::updateDriverLocation);
-
-        locationUpdateThread.setDaemon(true);
-        locationUpdateThread.start();
+    public void initDriverLocationUpdateThread() {
+        executorService.submit(this::updateDriverLocation);
     }
 
 }
