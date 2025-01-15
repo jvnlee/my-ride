@@ -1,6 +1,6 @@
 services:
   app:
-    container_name: app
+    container_name: myride-app
     build: .
     ports:
       - 80:8080
@@ -9,10 +9,11 @@ services:
         condition: service_healthy
 
   db:
-    container_name: db
+    container_name: mysql-db
     image: mysql:8.4
     ports:
       - 3306:3306
+    restart: always
     volumes:
       - ./db:/var/lib/mysql
     environment:
@@ -24,3 +25,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  redis:
+    container_name: redis
+    image: redis:7.4
+    ports:
+      - 6379:6379
+    restart: always
