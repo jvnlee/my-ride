@@ -48,7 +48,7 @@ public class LocationService {
 
                 Long result = redisTemplate.opsForGeo().add(
                         driverLocationsKey,
-                        new Point(driverLocationDto.getLatitude(), driverLocationDto.getLongitude()),
+                        new Point(driverLocationDto.getLongitude(), driverLocationDto.getLatitude()),
                         driverId.toString()
                 );
 
