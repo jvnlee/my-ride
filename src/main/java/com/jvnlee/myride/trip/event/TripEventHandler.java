@@ -3,7 +3,8 @@ package com.jvnlee.myride.trip.event;
 import com.jvnlee.myride.rider.broadcaster.RiderWebSocketBroadcaster;
 import com.jvnlee.myride.trip.service.TripDriverAssignmentService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -15,6 +16,7 @@ public class TripEventHandler {
 
     private final RiderWebSocketBroadcaster riderWebSocketBroadcaster;
 
+    @Async
     @TransactionalEventListener
     public void handleTripCreated(TripCreatedEvent event) {
         tripDriverAssignmentService.assignDriver(event.getTripId(), event.getPickupLatitude(), event.getPickupLongitude());
@@ -23,6 +25,11 @@ public class TripEventHandler {
     @TransactionalEventListener
     public void handleTripDriverAssigned(TripDriverAssignedEvent event) {
         riderWebSocketBroadcaster.broadcastDriverLocation(event.getTripId(), event.getDriverId());
+    }
+
+    @EventListener
+    public void handleTripCompleted(TripCompletedEvent event) {
+        riderWebSocketBroadcaster.stopBroadcasting(event.getTripId());
     }
 
 }
