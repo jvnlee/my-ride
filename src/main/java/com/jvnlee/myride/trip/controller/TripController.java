@@ -5,7 +5,9 @@ import com.jvnlee.myride.trip.dto.CreateTripResponseDto;
 import com.jvnlee.myride.trip.service.TripService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +22,18 @@ public class TripController {
     @PostMapping("/")
     public ResponseEntity<CreateTripResponseDto> createTrip(@RequestBody CreateTripRequestDto createTripRequestDto) {
         return ResponseEntity.ok(tripService.createTrip(createTripRequestDto));
+    }
+
+    @PutMapping("/{tripId}/start")
+    public ResponseEntity<Void> startTrip(@PathVariable Long tripId) {
+        tripService.startTrip(tripId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{tripId}/finish")
+    public ResponseEntity<Void> finishTrip(@PathVariable Long tripId) {
+        tripService.finishTrip(tripId);
+        return ResponseEntity.ok().build();
     }
 
 }
