@@ -1,11 +1,18 @@
 package com.jvnlee.myride.driver.service;
 
 import com.jvnlee.myride.driver.dto.DriverLocationDto;
+import com.jvnlee.myride.exception.FailedToAssignDriverException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.geo.Circle;
+import org.springframework.data.geo.Distance;
+import org.springframework.data.geo.GeoResults;
+import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
+import org.springframework.data.redis.connection.RedisGeoCommands;
+import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +31,10 @@ public class DriverLocationService {
     private final RedisTemplate<String, String> redisTemplate;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+    private static final String DRIVER_LOCATIONS_KEY = "driver:locations";
+
+    private static final double DEFAULT_SEARCH_RADIUS_KM = 10.0;
 
     public void putDriverLocation(DriverLocationDto driverLocationDto) {
         try {
@@ -47,12 +58,9 @@ public class DriverLocationService {
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 DriverLocationDto driverLocationDto = takeDriverLocation();
-
-                String driverLocationsKey = "driver:locations";
                 Long driverId = driverLocationDto.getDriverId();
-
                 Long result = redisTemplate.opsForGeo().add(
-                        driverLocationsKey,
+                        DRIVER_LOCATIONS_KEY,
                         new Point(driverLocationDto.getLongitude(), driverLocationDto.getLatitude()),
                         driverId.toString()
                 );
@@ -68,6 +76,33 @@ public class DriverLocationService {
                 log.error("Error updating driver location: {}", e.getMessage(), e);
             }
         }
+    }
+
+    public Long findClosestDriver(double longitude, double latitude) {
+        Point pickupLocation = new Point(longitude, latitude);
+        Distance radius = new Distance(DEFAULT_SEARCH_RADIUS_KM, Metrics.KILOMETERS);
+
+        GeoResults<GeoLocation<String>> geoResults = redisTemplate.opsForGeo().radius(
+                DRIVER_LOCATIONS_KEY,
+                new Circle(pickupLocation, radius),
+                RedisGeoCommands.GeoRadiusCommandArgs.newGeoRadiusArgs()
+                        .includeDistance()
+                        .includeCoordinates()
+                        .sortAscending()
+                        .limit(1)
+        );
+
+        if (geoResults == null || geoResults.getContent().isEmpty()) {
+            throw new FailedToAssignDriverException();
+        }
+
+        String closestDriverId = geoResults.getContent().get(0).getContent().getName();
+        log.info(
+                "Closest driver ID: {}\nRequested pickup location: lat: {} lng: {}",
+                closestDriverId, latitude, longitude
+        );
+
+        return Long.parseLong(closestDriverId);
     }
 
     @PostConstruct
