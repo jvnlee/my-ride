@@ -10,7 +10,6 @@ import com.jvnlee.myride.trip.dto.CreateTripRequestDto;
 import com.jvnlee.myride.trip.dto.CreateTripResponseDto;
 import com.jvnlee.myride.trip.event.TripCreatedEvent;
 import com.jvnlee.myride.trip.repository.TripRepository;
-import com.jvnlee.myride.util.ReverseGeocodingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -26,8 +25,6 @@ public class TripService {
 
     private final PaymentRepository paymentRepository;
 
-    private final ReverseGeocodingService reverseGeocodingService;
-
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
@@ -38,21 +35,13 @@ public class TripService {
         Double pickupLatitude = createTripRequestDto.getPickupLatitude();
         Double pickupLongitude = createTripRequestDto.getPickupLongitude();
 
-        String pickupAddress = reverseGeocodingService.convertCoordinatesToAddress(
-                pickupLatitude,
-                pickupLongitude
-        );
-
-        String dropoffAddress = reverseGeocodingService.convertCoordinatesToAddress(
-                createTripRequestDto.getDropoffLatitude(),
-                createTripRequestDto.getDropoffLongitude()
-        );
-
         Trip trip = tripRepository.save(
                 Trip.builder()
                         .rider(rider)
-                        .pickupLocation(pickupAddress)
-                        .dropoffLocation(dropoffAddress)
+                        .pickupLatitude(pickupLatitude)
+                        .pickupLongitude(pickupLongitude)
+                        .dropoffLatitude(createTripRequestDto.getDropoffLatitude())
+                        .dropoffLongitude(createTripRequestDto.getDropoffLongitude())
                         .build()
         );
 
