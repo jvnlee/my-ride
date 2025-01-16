@@ -83,6 +83,10 @@ public class Trip {
         this.status = TripStatus.REQUESTED;
     }
 
+    public void assignDriver(Driver driver) {
+        this.driver = driver;
+    }
+
     public void startTrip() {
         this.pickupTime = LocalDateTime.now();
         this.status = TripStatus.IN_PROGRESS;
