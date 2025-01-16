@@ -80,7 +80,7 @@ public class DriverLocationService {
         }
     }
 
-    public Long findClosestDriver(double longitude, double latitude) {
+    public Long findClosestDriver(double latitude, double longitude) {
         Point pickupLocation = new Point(longitude, latitude);
         Distance radius = new Distance(DEFAULT_SEARCH_RADIUS_KM, Metrics.KILOMETERS);
 
