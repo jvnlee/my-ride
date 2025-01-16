@@ -41,11 +41,17 @@ public class Trip {
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 
-    @Column(name = "pickup_location", nullable = false)
-    private String pickupLocation;
+    @Column(name = "pickup_latitude", nullable = false)
+    private double pickupLatitude;
 
-    @Column(name = "dropoff_location", nullable = false)
-    private String dropoffLocation;
+    @Column(name = "pickup_longitude", nullable = false)
+    private double pickupLongitude;
+
+    @Column(name = "dropoff_latitude", nullable = false)
+    private double dropoffLatitude;
+
+    @Column(name = "dropoff_longitude", nullable = false)
+    private double dropoffLongitude;
 
     @Column(name = "pickup_time")
     private LocalDateTime pickupTime;
@@ -66,12 +72,14 @@ public class Trip {
     }
 
     @Builder
-    private Trip(Driver driver, Rider rider, Vehicle vehicle, String pickupLocation, String dropoffLocation) {
+    private Trip(Driver driver, Rider rider, Vehicle vehicle, double pickupLatitude, double pickupLongitude, double dropoffLatitude, double dropoffLongitude) {
         this.driver = driver;
         this.rider = rider;
         this.vehicle = vehicle;
-        this.pickupLocation = pickupLocation;
-        this.dropoffLocation = dropoffLocation;
+        this.pickupLatitude = pickupLatitude;
+        this.pickupLongitude = pickupLongitude;
+        this.dropoffLatitude = dropoffLatitude;
+        this.dropoffLongitude = dropoffLongitude;
         this.status = TripStatus.REQUESTED;
     }
 
