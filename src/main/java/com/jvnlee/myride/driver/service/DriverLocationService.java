@@ -2,6 +2,7 @@ package com.jvnlee.myride.driver.service;
 
 import com.jvnlee.myride.driver.dto.DriverLocationDto;
 import com.jvnlee.myride.exception.FailedToAssignDriverException;
+import com.jvnlee.myride.exception.FailedToGetDriverLocationException;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.data.redis.connection.RedisGeoCommands.GeoLocation;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -103,6 +105,21 @@ public class DriverLocationService {
         );
 
         return Long.parseLong(closestDriverId);
+    }
+
+    public DriverLocationDto getDriverLocation(long driverId) {
+        List<Point> result = redisTemplate.opsForGeo().position(
+                DRIVER_LOCATIONS_KEY,
+                String.valueOf(driverId)
+        );
+
+        if (result == null || result.isEmpty()) {
+            throw new FailedToGetDriverLocationException();
+        }
+
+        Point driverLocation = result.get(0);
+
+        return new DriverLocationDto(driverId, driverLocation.getX(), driverLocation.getY());
     }
 
     @PostConstruct
