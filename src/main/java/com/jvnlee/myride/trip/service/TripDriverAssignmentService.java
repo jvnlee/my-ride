@@ -9,11 +9,13 @@ import com.jvnlee.myride.trip.Trip;
 import com.jvnlee.myride.trip.event.TripDriverAssignedEvent;
 import com.jvnlee.myride.trip.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TripDriverAssignmentService {
@@ -38,6 +40,7 @@ public class TripDriverAssignmentService {
 
         trip.assignDriver(driver);
 
+        log.info("Driver ID {} assigned to Trip ID {}", driverId, tripId);
         applicationEventPublisher.publishEvent(new TripDriverAssignedEvent(tripId, driverId));
     }
 

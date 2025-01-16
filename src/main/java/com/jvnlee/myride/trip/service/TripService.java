@@ -11,10 +11,12 @@ import com.jvnlee.myride.trip.dto.CreateTripResponseDto;
 import com.jvnlee.myride.trip.event.TripCreatedEvent;
 import com.jvnlee.myride.trip.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TripService {
@@ -57,6 +59,7 @@ public class TripService {
         // 이벤트 발행
         // TripCreatedEvent -> eventhandler -> findClosestDriver
         // -> Assign (Trip에 Driver 지정, TripStatus IN_PROGRESS 될 때까지 Rider에게 Driver 위치 실시간 업데이트)
+        log.info("Requested Trip created with ID {}", tripId);
         applicationEventPublisher.publishEvent(new TripCreatedEvent(tripId, pickupLatitude, pickupLongitude));
 
         return new CreateTripResponseDto(tripId);
