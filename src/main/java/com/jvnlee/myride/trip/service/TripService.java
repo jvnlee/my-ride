@@ -1,13 +1,17 @@
 package com.jvnlee.myride.trip.service;
 
+import com.jvnlee.myride.exception.IllegalTripStatusException;
 import com.jvnlee.myride.exception.RiderNotFoundException;
+import com.jvnlee.myride.exception.TripNotFoundException;
 import com.jvnlee.myride.payment.Payment;
 import com.jvnlee.myride.payment.repository.PaymentRepository;
 import com.jvnlee.myride.rider.Rider;
 import com.jvnlee.myride.rider.repository.RiderRepository;
 import com.jvnlee.myride.trip.Trip;
+import com.jvnlee.myride.trip.Trip.TripStatus;
 import com.jvnlee.myride.trip.dto.CreateTripRequestDto;
 import com.jvnlee.myride.trip.dto.CreateTripResponseDto;
+import com.jvnlee.myride.trip.event.TripCompletedEvent;
 import com.jvnlee.myride.trip.event.TripCreatedEvent;
 import com.jvnlee.myride.trip.repository.TripRepository;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +67,34 @@ public class TripService {
         applicationEventPublisher.publishEvent(new TripCreatedEvent(tripId, pickupLatitude, pickupLongitude));
 
         return new CreateTripResponseDto(tripId);
+    }
+
+    @Transactional
+    public void startTrip(Long tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(TripNotFoundException::new);
+
+        if (trip.getStatus() != TripStatus.REQUESTED) {
+            throw new IllegalTripStatusException();
+        }
+
+        trip.startTrip();
+        log.info("Driver ID {} picked up Rider ID {} for Trip ID {}", trip.getDriver().getId(), trip.getRider().getId(), tripId);
+    }
+
+    @Transactional
+    public void finishTrip(Long tripId) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(TripNotFoundException::new);
+
+        if (trip.getStatus() != TripStatus.IN_PROGRESS) {
+            throw new IllegalTripStatusException();
+        }
+
+        trip.finishTrip();
+        log.info("Driver ID {} dropped off Rider ID {} for Trip ID {}", trip.getDriver().getId(), trip.getRider().getId(), tripId);
+
+        applicationEventPublisher.publishEvent(new TripCompletedEvent(trip.getId()));
     }
 
 }

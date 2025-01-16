@@ -92,7 +92,7 @@ public class Trip {
         this.status = TripStatus.IN_PROGRESS;
     }
 
-    public void completeTrip() {
+    public void finishTrip() {
         this.dropoffTime = LocalDateTime.now();
         this.status = TripStatus.COMPLETED;
     }
