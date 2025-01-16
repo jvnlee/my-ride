@@ -56,13 +56,11 @@ public class TripService {
         paymentRepository.save(
                 Payment.builder()
                         .trip(trip)
+                        .rider(rider)
                         .method(createTripRequestDto.getPaymentMethod())
                         .build()
         );
 
-        // 이벤트 발행
-        // TripCreatedEvent -> eventhandler -> findClosestDriver
-        // -> Assign (Trip에 Driver 지정, TripStatus IN_PROGRESS 될 때까지 Rider에게 Driver 위치 실시간 업데이트)
         log.info("Requested Trip created with ID {}", tripId);
         applicationEventPublisher.publishEvent(new TripCreatedEvent(tripId, pickupLatitude, pickupLongitude));
 
