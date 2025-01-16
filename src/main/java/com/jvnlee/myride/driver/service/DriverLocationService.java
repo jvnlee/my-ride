@@ -61,18 +61,18 @@ public class DriverLocationService {
             try {
                 DriverLocationDto driverLocationDto = takeDriverLocation();
                 Long driverId = driverLocationDto.getDriverId();
-                Long result = redisTemplate.opsForGeo().add(
+
+                redisTemplate.opsForGeo().add(
                         DRIVER_LOCATIONS_KEY,
                         new Point(driverLocationDto.getLongitude(), driverLocationDto.getLatitude()),
                         driverId.toString()
                 );
 
-                if (result != null && result > 0) {
-                    log.info("Driver location GeoHash updated to Redis: Driver ID = {}", driverId);
-                }
+                log.info("Driver location GeoHash updated to Redis: Driver ID = {}", driverId);
             } catch (InterruptedException e) {
                 log.warn("UpdateDriverLocationThread interrupted, shutting down gracefully...");
                 Thread.currentThread().interrupt();
+
                 break;
             } catch (Exception e) {
                 log.error("Error updating driver location: {}", e.getMessage(), e);
