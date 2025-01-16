@@ -71,7 +71,8 @@ public class DriverLocationService {
     }
 
     @PostConstruct
-    public void initDriverLocationUpdateThread() {
+    public void initExecutorService() {
+        log.info("Initiating executor service...");
         executorService.submit(this::updateDriverLocation);
     }
 
