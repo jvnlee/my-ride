@@ -55,8 +55,7 @@ public class Payment {
     }
 
     @Builder
-    private Payment(int price, Trip trip, Rider rider, PaymentMethod method) {
-        this.price = price;
+    private Payment(Trip trip, Rider rider, PaymentMethod method) {
         this.trip = trip;
         this.rider = rider;
         this.method = method;
@@ -65,6 +64,10 @@ public class Payment {
 
     public void changeStatus(PaymentStatus status) {
         this.status = status;
+    }
+
+    public void insertPrice(int price) {
+        this.price = price;
     }
 
 }
