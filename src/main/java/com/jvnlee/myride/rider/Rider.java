@@ -25,6 +25,7 @@ public class Rider {
     private String name;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private RiderStatus status;
 
     public enum RiderStatus {
