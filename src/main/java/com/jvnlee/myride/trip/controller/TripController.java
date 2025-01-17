@@ -2,6 +2,7 @@ package com.jvnlee.myride.trip.controller;
 
 import com.jvnlee.myride.trip.dto.CreateTripRequestDto;
 import com.jvnlee.myride.trip.dto.CreateTripResponseDto;
+import com.jvnlee.myride.trip.dto.FinishTripRequestDto;
 import com.jvnlee.myride.trip.service.TripService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,8 +32,8 @@ public class TripController {
     }
 
     @PutMapping("/{tripId}/finish")
-    public ResponseEntity<Void> finishTrip(@PathVariable Long tripId) {
-        tripService.finishTrip(tripId);
+    public ResponseEntity<Void> finishTrip(@PathVariable Long tripId, @RequestBody FinishTripRequestDto finishTripRequestDto) {
+        tripService.finishTrip(tripId, finishTripRequestDto);
         return ResponseEntity.ok().build();
     }
 
