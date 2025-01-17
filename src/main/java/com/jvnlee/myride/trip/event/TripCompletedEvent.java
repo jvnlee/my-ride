@@ -12,4 +12,6 @@ public class TripCompletedEvent {
 
     private long tripId;
 
+    private int price;
+
 }

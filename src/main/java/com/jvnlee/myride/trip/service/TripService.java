@@ -11,6 +11,7 @@ import com.jvnlee.myride.trip.Trip;
 import com.jvnlee.myride.trip.Trip.TripStatus;
 import com.jvnlee.myride.trip.dto.CreateTripRequestDto;
 import com.jvnlee.myride.trip.dto.CreateTripResponseDto;
+import com.jvnlee.myride.trip.dto.FinishTripRequestDto;
 import com.jvnlee.myride.trip.event.TripCompletedEvent;
 import com.jvnlee.myride.trip.event.TripCreatedEvent;
 import com.jvnlee.myride.trip.repository.TripRepository;
@@ -81,7 +82,7 @@ public class TripService {
     }
 
     @Transactional
-    public void finishTrip(Long tripId) {
+    public void finishTrip(Long tripId, FinishTripRequestDto finishTripRequestDto) {
         Trip trip = tripRepository.findById(tripId)
                 .orElseThrow(TripNotFoundException::new);
 
@@ -92,7 +93,7 @@ public class TripService {
         trip.finishTrip();
         log.info("Driver ID {} dropped off Rider ID {} for Trip ID {}", trip.getDriver().getId(), trip.getRider().getId(), tripId);
 
-        applicationEventPublisher.publishEvent(new TripCompletedEvent(trip.getId()));
+        applicationEventPublisher.publishEvent(new TripCompletedEvent(trip.getId(), finishTripRequestDto.getPrice()));
     }
 
 }
