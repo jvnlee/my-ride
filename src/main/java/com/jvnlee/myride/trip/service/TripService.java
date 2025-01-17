@@ -7,6 +7,7 @@ import com.jvnlee.myride.exception.TripNotFoundException;
 import com.jvnlee.myride.payment.Payment;
 import com.jvnlee.myride.payment.repository.PaymentRepository;
 import com.jvnlee.myride.rider.Rider;
+import com.jvnlee.myride.rider.Rider.RiderStatus;
 import com.jvnlee.myride.rider.repository.RiderRepository;
 import com.jvnlee.myride.trip.Trip;
 import com.jvnlee.myride.trip.Trip.TripStatus;
@@ -39,6 +40,8 @@ public class TripService {
     public CreateTripResponseDto createTrip(CreateTripRequestDto createTripRequestDto) {
         Rider rider = riderRepository.findById(createTripRequestDto.getRiderId())
                 .orElseThrow(RiderNotFoundException::new);
+
+        rider.changeStatus(RiderStatus.ON_TRIP);
 
         Double pickupLatitude = createTripRequestDto.getPickupLatitude();
         Double pickupLongitude = createTripRequestDto.getPickupLongitude();
@@ -92,6 +95,8 @@ public class TripService {
         }
 
         trip.getDriver().changeStatus(DriverStatus.AVAILABLE);
+        trip.getRider().changeStatus(RiderStatus.NOT_ON_TRIP);
+
         trip.finishTrip();
         log.info("Driver ID {} dropped off Rider ID {} for Trip ID {}", trip.getDriver().getId(), trip.getRider().getId(), tripId);
 
