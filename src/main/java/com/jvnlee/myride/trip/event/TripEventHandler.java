@@ -4,7 +4,6 @@ import com.jvnlee.myride.payment.service.PaymentService;
 import com.jvnlee.myride.rider.broadcaster.RiderWebSocketBroadcaster;
 import com.jvnlee.myride.trip.service.TripDriverAssignmentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -30,7 +29,8 @@ public class TripEventHandler {
         riderWebSocketBroadcaster.broadcastDriverLocation(event.getTripId(), event.getDriverId());
     }
 
-    @EventListener
+    @Async
+    @TransactionalEventListener
     public void handleTripCompleted(TripCompletedEvent event) {
         riderWebSocketBroadcaster.stopBroadcasting(event.getTripId());
 
