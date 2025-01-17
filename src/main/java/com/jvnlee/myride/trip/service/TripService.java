@@ -1,5 +1,6 @@
 package com.jvnlee.myride.trip.service;
 
+import com.jvnlee.myride.driver.Driver.DriverStatus;
 import com.jvnlee.myride.exception.IllegalTripStatusException;
 import com.jvnlee.myride.exception.RiderNotFoundException;
 import com.jvnlee.myride.exception.TripNotFoundException;
@@ -90,6 +91,7 @@ public class TripService {
             throw new IllegalTripStatusException();
         }
 
+        trip.getDriver().changeStatus(DriverStatus.AVAILABLE);
         trip.finishTrip();
         log.info("Driver ID {} dropped off Rider ID {} for Trip ID {}", trip.getDriver().getId(), trip.getRider().getId(), tripId);
 

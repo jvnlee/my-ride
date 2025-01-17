@@ -1,6 +1,7 @@
 package com.jvnlee.myride.trip.service;
 
 import com.jvnlee.myride.driver.Driver;
+import com.jvnlee.myride.driver.Driver.DriverStatus;
 import com.jvnlee.myride.driver.repository.DriverRepository;
 import com.jvnlee.myride.driver.service.DriverLocationService;
 import com.jvnlee.myride.exception.DriverNotFoundException;
@@ -38,6 +39,7 @@ public class TripDriverAssignmentService {
         Driver driver = driverRepository.findById(driverId)
                 .orElseThrow(DriverNotFoundException::new);
 
+        driver.changeStatus(DriverStatus.ASSIGNED);
         trip.assignDriver(driver);
 
         log.info("Driver ID {} assigned to Trip ID {}", driverId, tripId);
