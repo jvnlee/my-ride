@@ -1,5 +1,6 @@
 package com.jvnlee.myride.trip.event;
 
+import com.jvnlee.myride.payment.service.PaymentService;
 import com.jvnlee.myride.rider.broadcaster.RiderWebSocketBroadcaster;
 import com.jvnlee.myride.trip.service.TripDriverAssignmentService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,8 @@ public class TripEventHandler {
 
     private final RiderWebSocketBroadcaster riderWebSocketBroadcaster;
 
+    private final PaymentService paymentService;
+
     @Async
     @TransactionalEventListener
     public void handleTripCreated(TripCreatedEvent event) {
@@ -30,6 +33,8 @@ public class TripEventHandler {
     @EventListener
     public void handleTripCompleted(TripCompletedEvent event) {
         riderWebSocketBroadcaster.stopBroadcasting(event.getTripId());
+
+        paymentService.completePayment(event.getTripId(), event.getPrice());
     }
 
 }
