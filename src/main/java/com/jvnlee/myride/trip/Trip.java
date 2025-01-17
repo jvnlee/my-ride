@@ -2,7 +2,6 @@ package com.jvnlee.myride.trip;
 
 import com.jvnlee.myride.driver.Driver;
 import com.jvnlee.myride.rider.Rider;
-import com.jvnlee.myride.vehicle.Vehicle;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -37,10 +36,6 @@ public class Trip {
     @JoinColumn(name = "rider_id", nullable = false)
     private Rider rider;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "vehicle_id")
-    private Vehicle vehicle;
-
     @Column(name = "pickup_latitude", nullable = false)
     private double pickupLatitude;
 
@@ -72,10 +67,8 @@ public class Trip {
     }
 
     @Builder
-    private Trip(Driver driver, Rider rider, Vehicle vehicle, double pickupLatitude, double pickupLongitude, double dropoffLatitude, double dropoffLongitude) {
-        this.driver = driver;
+    private Trip(Rider rider, double pickupLatitude, double pickupLongitude, double dropoffLatitude, double dropoffLongitude) {
         this.rider = rider;
-        this.vehicle = vehicle;
         this.pickupLatitude = pickupLatitude;
         this.pickupLongitude = pickupLongitude;
         this.dropoffLatitude = dropoffLatitude;
